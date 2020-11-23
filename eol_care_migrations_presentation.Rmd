@@ -1,0 +1,118 @@
+---
+title: "What are the implications of retirement migration for informal care at the end of life?"
+subtitle: "An analysis of linked Scottish census and administrative data"
+author: "Jan Savinc"
+institute: "Edinburgh Napier University/SCADR"
+date: "27th November 2020"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+# Introduction
+
+I'm a newcomer to this project.
+
+Collaborators:
+
+* Iain Atherton, 
+* Anna Schneider, 
+* Annetta Smith, 
+* Hugo van Woerden, 
+* Deirdrie McLaughlin,
+* David Henderson,
+* Janni Leung 
+
+
+---
+
+# Background
+
+
+## Retirement migration
+
+### Small proportion of people relocate on or around time of retirement to areas perceived as conducive to quality of life
+
+### Retirement migration can have a marked demographic impact in local areas
+
+
+## Informal care
+
+### Adult children remain an important source of support
+
+### Proximity an important influence on type and level of informal support 
+
+---
+
+# What is Administrative data?
+
+## Data collected by governments, organisations, businesses, etc., for purposes of overview, registration, bookkeeping, etc.
+
+###  Also 'routinely collected data'
+
+## Usually not collected for statistical purposes
+
+### 'Secondary analysis' - used other than for its original purpose
+
+## Usually there's a lot of it - but the quality varies...
+
+
+---
+
+# Safeguards, privacy
+
+## 'Information governance'
+
+## GDPR
+
+## Public Benefit Privacy Panel - PBPP
+
+### Researchers submit proposals for projects involving data
+
+### De-anonymised data used only
+
+#### Medical records may still be identifiable!
+
+
+---
+
+# Data linkage
+
+* Scottish census, 2011
+  - Entire Scottish population, 93.76% coverage
+
+* Community Health Index (CHI) register
+  - 'NHS number' - assigned to individual at GP registration
+
+* National Records Scotland (NRS) Death records
+
+* Hospital admissions - Scottish Morbidity Records (SMR):
+  * SMR01 physical health admissions
+  * SMR01 Geriatric Long-term Stay
+  * SMR04 psychiatric admissions
+  * SMR06 cancer registrations
+
+* Prescribing Information System (PIS)
+
+* ...
+
+---
+
+# Methods 
+
+## Defining End-of-life care
+
+* aged 70+ 
+* living independently
+* in final year of life at time of 2011 census
+
+TODO: insert illustration here
+
