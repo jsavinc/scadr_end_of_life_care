@@ -1,0 +1,136 @@
+---
+title: "Extracting ICD-10 codes for palliative care estimates in the "
+author: "Jan Savinc"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+editor_options: 
+  chunk_output_type: console
+bibliography: bibliography.bib
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Libraries
+
+```{r, warning=FALSE}
+library(tidyverse)
+library(knitr)
+library(pdftools)  # for extracting data from pdf files
+```
+
+# Overview
+
+This script loads `appendix B` from the Quebec National Institut report on End of Life Palliative care [@bedard_soins_2006] and parses the ICD-10 codes reported.
+
+# Load document
+
+There was an automatically translated version made previously, however, I haven't been able to extract text from it (it was saved as images, probably?), so I'm using the original, French, text. I've manually trimmed the document to only the pages listing ICD-10 codes in appendix B for faster loading (using Microsoft print as PDF).
+
+```{r}
+text_raw <- pdf_text("./QuebecNationalInstitut_ICD10_codes.pdf")
+# text_raw <- pdf_text("./QuebecNationalInstitut_ICD10_codes_translated.pdf")  # the translation doesn't load any text - probably the text is saved as imagesd!
+
+# this converts the strings into a table so we can use tidy techniques
+text_table <-
+  map_dfr(
+    .x = text_raw,
+    .f = ~str_split(.x, pattern="\\\r\\\n") %>% set_names(., nm="entries")  # split all lines on the \r\n end of line characters, and then also merge the whole thing into a tibble
+  ) %>%
+  slice(-(1:14)) %>%  # remove first 14 lines, they have to do with ICD-9
+  slice(-1) #%>%  # remove the heading saying this is icd-10
+```
+
+
+# Investigating the text
+
+We now have a fairly messy text version of the appendix:
+
+```{r}
+head(text_table)
+tail(text_table)
+```
+
+There is whitespace that was used to align the entries in some hierarchical fashion, and there are unicode characters representing special characters (e.g. `d\u0092` in the text above). What we're interested in is just the ICD codes - the meanings can be inferred automatically later. I could extract the groupings of the codes also but there's little benefit to that and they seem to be following the chapters in ICD-10 anyway!
+
+# Parsing ranges of 3rd digit codes
+
+Some codes are specified at 3rd digit level, and to keep the representation compact, the 3rd level digits are separated by dots, e.g. `A52.0.1.2.3.7`. These need to be interpreted as `A52.0`, `A52.1`, etc.
+
+We can interpret these codes as a prefix `A52` followed by multiple suffixes, listed as dot-separated values. In other words, we split the string at the dots, and then treat the first value as prefix and the rest as suffixes to be concatenated onto the prefix individually.
+
+```{r}
+parse_code_range <- function(code_range) {
+  if (!str_detect(code_range, pattern="\\..*\\.")) return(code_range)  # return the original input if there aren't at least two dots in the code!
+  splits <- str_split(code_range, pattern="\\.", simplify = TRUE)
+  prefix <- splits[1]
+  suffixes <- splits[2:length(splits)]
+  codes_decimal <- paste(prefix, suffixes, sep = ".") 
+  codes_csv <- paste0(codes_decimal, collapse = ",")  # concatenate all the separate values into a single string - this makes it easier to check the interim result and allows to separate them later using separate_rows()
+}
+
+
+```
+
+
+# Extracting the codes from the text
+
+The codes are always specified in the decimal ICD-10 format, e.g. an upper-case letter (A-Z) followed by 2 digits (or more), with some codes specified as ranges as shown above. The codes are always enclosed in parentheses. To extract the codes, then, we'll use a regular expression capturing the open and closing parentheses, capturing the starting letter, two digits, and any more symbols afterwards.
+
+```{r}
+crude_extraction <-
+  text_table %>%
+  filter(str_detect(entries, pattern="\\([A-Z]\\d{2}")) %>%  # keep only rows with the parentheses + code pattern described above
+  mutate(
+    codes = str_extract(string = entries, pattern = "\\([A-Z]\\d.*\\)"),  # extract the code
+    codes = str_remove_all(string = codes, pattern = "\\(|\\)")  # remove parentheses
+    )
+
+crude_extraction %>% print(n=10)
+```
+
+We now need to parse the codes specified as ranges. I'll also count the nubmer of codes we'd get from it so we can check the results.
+
+What codes were specified as ranges?
+
+```{r}
+crude_extraction %>% filter(str_detect(codes, pattern="\\..*\\."))
+
+crude_extraction %>% filter(str_detect(codes, pattern="\\..*\\.")) %>% 
+  group_by(entries) %>%
+  summarise(codes = codes, code_parsed = parse_code_range(codes), n = length(str_split(code_parsed, pattern = "\\,", simplify = TRUE)))
+```
+
+Looks like this works fine, so we can now extract all codes:
+
+```{r}
+codes_extracted <-
+  crude_extraction %>%
+  group_by(codes) %>%
+  summarise(code_parsed = parse_code_range(codes), .groups="drop") %>%
+  separate_rows(code_parsed, sep=",")
+
+codes_final <- 
+  codes_extracted %>% 
+  select(code_decimal = code_parsed) %>%  # keep only the parsed code
+  distinct  # remove duplicates
+```
+
+These will be saved as `.csv`:
+
+```{r}
+write_csv(x = codes_final, path = "./outputs/quebec_palliative_icd10_codes.csv")
+```
+
+Finally, for reference, we'll print all of the codes:
+
+```{r}
+codes_extracted %>% print(n=nrow(.))
+```
+
+
+# References
