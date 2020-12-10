@@ -11,9 +11,9 @@
 
 <meta name="author" content="Jan Savinc" />
 
-<meta name="date" content="2020-12-07" />
+<meta name="date" content="2020-12-10" />
 
-<title>Extracting ICD-10 codes for palliative care estimates in the</title>
+<title>Extracting ICD-10 codes for palliative care estimates from the Quebec Palliative care (2006) paper</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1523,9 +1523,9 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Extracting ICD-10 codes for palliative care estimates in the</h1>
+<h1 class="title toc-ignore">Extracting ICD-10 codes for palliative care estimates from the Quebec Palliative care (2006) paper</h1>
 <h4 class="author">Jan Savinc</h4>
-<h4 class="date">December 07, 2020</h4>
+<h4 class="date">December 10, 2020</h4>
 
 </div>
 
@@ -1552,7 +1552,7 @@ library(pdftools)  # for extracting data from pdf files</code></pre>
 <div id="load-document" class="section level1">
 <h1>Load document</h1>
 <p>There was an automatically translated version made previously, however, I haven’t been able to extract text from it (it was saved as images, probably?), so I’m using the original, French, text. I’ve manually trimmed the document to only the pages listing ICD-10 codes in appendix B for faster loading (using Microsoft print as PDF).</p>
-<pre class="r"><code>text_raw &lt;- pdf_text(&quot;./QuebecNationalInstitut_ICD10_codes.pdf&quot;)
+<pre class="r"><code>text_raw &lt;- pdf_text(&quot;./raw/QuebecNationalInstitut_ICD10_codes.pdf&quot;)
 # text_raw &lt;- pdf_text(&quot;./QuebecNationalInstitut_ICD10_codes_translated.pdf&quot;)  # the translation doesn&#39;t load any text - probably the text is saved as imagesd!
 
 # this converts the strings into a table so we can use tidy techniques
@@ -2073,6 +2073,7 @@ codes_final &lt;-
 <li>Congenital &amp; chromosomal disorders,</li>
 <li>Blood disorders &amp; certain immune system disorders</li>
 </ul>
+<p>This also includes the R__ codes for signs &amp; symptoms!</p>
 <p>Practically, this includes all codes not covered by Trajectories 1 &amp; 3!</p>
 <p><strong>Trajectory 3</strong></p>
 <blockquote>

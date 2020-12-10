@@ -1,5 +1,5 @@
 ---
-title: "Extracting ICD-10 codes for palliative care estimates in the "
+title: "Extracting ICD-10 codes for palliative care estimates from the Quebec Palliative care (2006) paper"
 author: "Jan Savinc"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output: 
@@ -32,7 +32,7 @@ This script loads `appendix B` from the Quebec National Institut report on End o
 There was an automatically translated version made previously, however, I haven't been able to extract text from it (it was saved as images, probably?), so I'm using the original, French, text. I've manually trimmed the document to only the pages listing ICD-10 codes in appendix B for faster loading (using Microsoft print as PDF).
 
 ```{r}
-text_raw <- pdf_text("./QuebecNationalInstitut_ICD10_codes.pdf")
+text_raw <- pdf_text("./raw/QuebecNationalInstitut_ICD10_codes.pdf")
 # text_raw <- pdf_text("./QuebecNationalInstitut_ICD10_codes_translated.pdf")  # the translation doesn't load any text - probably the text is saved as imagesd!
 
 # this converts the strings into a table so we can use tidy techniques
@@ -72,8 +72,6 @@ parse_code_range <- function(code_range) {
   codes_decimal <- paste(prefix, suffixes, sep = ".") 
   codes_csv <- paste0(codes_decimal, collapse = ",")  # concatenate all the separate values into a single string - this makes it easier to check the interim result and allows to separate them later using separate_rows()
 }
-
-
 ```
 
 
