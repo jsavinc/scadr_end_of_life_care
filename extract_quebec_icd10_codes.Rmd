@@ -120,17 +120,103 @@ codes_final <-
   distinct  # remove duplicates
 ```
 
+Finally, for reference, we'll print all of the codes:
+
+```{r}
+codes_extracted %>% print(n=nrow(.))
+```
+
+
+# Categorising trajectories
+
+The codes can be categorised as one of three possible illness trajectories:
+
+* Trajectory 1: short period of evident decline, typically cancer - ‘tumours’
+* Trajectory 2: long-term limitations with intermittent serious episodes
+* Trajectory 3: prolonged dwindling
+
+The article [@bedard_soins_2006] specifies the ICD-10 codes in groups corresponding to the ICD-10 chapters; the Trajectories 1 & 3 are specified as one or two chapters, whereas Trajectory 2 includes all other chapters, so that's the order of coding I'll do.
+
+This is what the article says:
+
+**Trajectory 1**
+
+> La trajectoire I correspond à une évolution progressive et à phase terminale habituellement relativement claire. Selon Lunney et al. (13), Murray et al. (14) et Murtagh et al. (15), les décès par cancer sont typiques de la trajectoire I. Nous avons donc assigné la trajectoire I à tous les décès par « Tumeurs » (voir codes CIM-9 et CIM-10 à l’annexe B).
+
+This trajectory includes tumours, which in in the appendix are defined as all C__ codes and D__ codes up to including D48.
+
+
+**Trajectory 2**
+
+> La trajectoire II se définit par un déclin graduel, ponctué par des épisodes de
+détérioration aigus et certains moments de récupération, avec une mort parfois
+soudaine et inattendue. Selon Lunney et al. (13), Murray et al. (14) et Murtagh et al.
+(15), la trajectoire II décrit la trajectoire des patients qui décèdent de défaillance du
+système cardio-pulmonaire. Nous avons donc assigné la trajectoire II aux décès par
+« Maladies de l’appareil circulatoire » et de « Maladies de l’appareil respiratoire »
+(voir codes CIM-9 et CIM-10 à l’annexe B). À la lumière des résultats, il est apparu
+que la trajectoire II semblait décrire également l’évolution de plusieurs autres
+maladies chroniques qui se sont avérées fatales notamment de « Maladies
+endocriniennes, de la nutrition et du métabolisme », de « Maladies de l’appareil
+digestif », de « Maladies de l’appareil génito-urinaire », de « Maladies de l’appareil
+ostéo-articulaire, des muscles et du tissu conjonctif, maladies de la peau », de
+« Maladies infectieuses et parasitaires », de « Malformations congénitales et
+anomalies chromosomiques » et de «Maladies du sang et des organes
+hématopoïétiques et certains troubles du système immunitaire » (voir codes CIM-9 et
+CIM-10 à l’annexe B).
+
+This trajectory includes:
+
+* Disorders of the circulatory system,
+* Disorders of the pulmonary system,
+* Endocrine disorders & disorders of nutrition and metabolism,
+* Digestive organs disorders,
+* Genito-urinary disroders,
+* Skeleto-muscular disorders,,
+* Infectious & parasitic diseaeses,
+* Congenital & chromosomal disorders,
+* Blood disorders & certain immune system disorders
+
+This also includes the R__ codes for signs & symptoms!
+
+Practically, this includes all codes not covered by Trajectories 1 & 3!
+
+
+**Trajectory 3**
+
+> La trajectoire III se définit par un déclin graduel et prolongé, typique des personnes
+âgées et fragiles ou des personnes avec démence selon Lunney et al. (13), Murray
+et al. (14) et Murtagh et al. (15). Nous avons donc assigné cette trajectoire aux «
+Troubles mentaux » (CIM-9), « Troubles mentaux et du comportement » (CIM-10),
+« Maladies du système nerveux et des organes des sens » (CIM-9) et « Maladies du
+système nerveux » (CIM-10) (voir codes CIM-9 et CIM-10 à l’annexe B).
+
+This trajectory includes:
+
+* mental & behavioural disorders (F00-F06)
+* nervous system disorders (G03-G99)
+
+In this list of codes, this captures all F__ and G__ codes!
+
+```{r}
+codes_final <-
+  codes_final %>%
+  mutate(
+    trajectory = case_when(
+      str_detect(code_decimal, pattern=paste0("^C|", paste0("^",paste0("D",str_pad(string = 0:48, width = 2, pad = "0")),collapse="|"))) ~ "Trajectory 1: short period of evident decline",
+      str_detect(code_decimal, pattern="^F|^G") ~ "Trajectory 3: prolonged dwindling",
+       TRUE ~ "Trajectory 2: long-term limitations with intermittent serious episodes"
+    )
+  )
+```
+
+
 These will be saved as `.csv`:
 
 ```{r}
 write_csv(x = codes_final, path = "./outputs/quebec_palliative_icd10_codes.csv")
 ```
 
-Finally, for reference, we'll print all of the codes:
-
-```{r}
-codes_extracted %>% print(n=nrow(.))
-```
 
 
 # References

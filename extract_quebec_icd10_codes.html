@@ -1676,8 +1676,6 @@ codes_final &lt;-
   codes_extracted %&gt;% 
   select(code_decimal = code_parsed) %&gt;%  # keep only the parsed code
   distinct  # remove duplicates</code></pre>
-<p>These will be saved as <code>.csv</code>:</p>
-<pre class="r"><code>write_csv(x = codes_final, path = &quot;./outputs/quebec_palliative_icd10_codes.csv&quot;)</code></pre>
 <p>Finally, for reference, we’ll print all of the codes:</p>
 <pre class="r"><code>codes_extracted %&gt;% print(n=nrow(.))</code></pre>
 <pre><code>## # A tibble: 360 x 2
@@ -2043,6 +2041,60 @@ codes_final &lt;-
 ## 358 R06.0.2.3.4.5.8 R06.4      
 ## 359 R06.0.2.3.4.5.8 R06.5      
 ## 360 R06.0.2.3.4.5.8 R06.8</code></pre>
+</div>
+<div id="categorising-trajectories" class="section level1">
+<h1>Categorising trajectories</h1>
+<p>The codes can be categorised as one of three possible illness trajectories:</p>
+<ul>
+<li>Trajectory 1: short period of evident decline, typically cancer - ‘tumours’</li>
+<li>Trajectory 2: long-term limitations with intermittent serious episodes</li>
+<li>Trajectory 3: prolonged dwindling</li>
+</ul>
+<p>The article <span class="citation">(Bédard et al. 2006)</span> specifies the ICD-10 codes in groups corresponding to the ICD-10 chapters; the Trajectories 1 &amp; 3 are specified as one or two chapters, whereas Trajectory 2 includes all other chapters, so that’s the order of coding I’ll do.</p>
+<p>This is what the article says:</p>
+<p><strong>Trajectory 1</strong></p>
+<blockquote>
+<p>La trajectoire I correspond à une évolution progressive et à phase terminale habituellement relativement claire. Selon Lunney et al. (13), Murray et al. (14) et Murtagh et al. (15), les décès par cancer sont typiques de la trajectoire I. Nous avons donc assigné la trajectoire I à tous les décès par « Tumeurs » (voir codes CIM-9 et CIM-10 à l’annexe B).</p>
+</blockquote>
+<p>This trajectory includes tumours, which in in the appendix are defined as all C__ codes and D__ codes up to including D48.</p>
+<p><strong>Trajectory 2</strong></p>
+<blockquote>
+<p>La trajectoire II se définit par un déclin graduel, ponctué par des épisodes de détérioration aigus et certains moments de récupération, avec une mort parfois soudaine et inattendue. Selon Lunney et al. (13), Murray et al. (14) et Murtagh et al. (15), la trajectoire II décrit la trajectoire des patients qui décèdent de défaillance du système cardio-pulmonaire. Nous avons donc assigné la trajectoire II aux décès par « Maladies de l’appareil circulatoire » et de « Maladies de l’appareil respiratoire » (voir codes CIM-9 et CIM-10 à l’annexe B). À la lumière des résultats, il est apparu que la trajectoire II semblait décrire également l’évolution de plusieurs autres maladies chroniques qui se sont avérées fatales notamment de « Maladies endocriniennes, de la nutrition et du métabolisme », de « Maladies de l’appareil digestif », de « Maladies de l’appareil génito-urinaire », de « Maladies de l’appareil ostéo-articulaire, des muscles et du tissu conjonctif, maladies de la peau », de « Maladies infectieuses et parasitaires », de « Malformations congénitales et anomalies chromosomiques » et de «Maladies du sang et des organes hématopoïétiques et certains troubles du système immunitaire » (voir codes CIM-9 et CIM-10 à l’annexe B).</p>
+</blockquote>
+<p>This trajectory includes:</p>
+<ul>
+<li>Disorders of the circulatory system,</li>
+<li>Disorders of the pulmonary system,</li>
+<li>Endocrine disorders &amp; disorders of nutrition and metabolism,</li>
+<li>Digestive organs disorders,</li>
+<li>Genito-urinary disroders,</li>
+<li>Skeleto-muscular disorders,,</li>
+<li>Infectious &amp; parasitic diseaeses,</li>
+<li>Congenital &amp; chromosomal disorders,</li>
+<li>Blood disorders &amp; certain immune system disorders</li>
+</ul>
+<p>Practically, this includes all codes not covered by Trajectories 1 &amp; 3!</p>
+<p><strong>Trajectory 3</strong></p>
+<blockquote>
+<p>La trajectoire III se définit par un déclin graduel et prolongé, typique des personnes âgées et fragiles ou des personnes avec démence selon Lunney et al. (13), Murray et al. (14) et Murtagh et al. (15). Nous avons donc assigné cette trajectoire aux « Troubles mentaux » (CIM-9), « Troubles mentaux et du comportement » (CIM-10), « Maladies du système nerveux et des organes des sens » (CIM-9) et « Maladies du système nerveux » (CIM-10) (voir codes CIM-9 et CIM-10 à l’annexe B).</p>
+</blockquote>
+<p>This trajectory includes:</p>
+<ul>
+<li>mental &amp; behavioural disorders (F00-F06)</li>
+<li>nervous system disorders (G03-G99)</li>
+</ul>
+<p>In this list of codes, this captures all F__ and G__ codes!</p>
+<pre class="r"><code>codes_final &lt;-
+  codes_final %&gt;%
+  mutate(
+    trajectory = case_when(
+      str_detect(code_decimal, pattern=paste0(&quot;^C|&quot;, paste0(&quot;^&quot;,paste0(&quot;D&quot;,str_pad(string = 0:48, width = 2, pad = &quot;0&quot;)),collapse=&quot;|&quot;))) ~ &quot;Trajectory 1: short period of evident decline&quot;,
+      str_detect(code_decimal, pattern=&quot;^F|^G&quot;) ~ &quot;Trajectory 3: prolonged dwindling&quot;,
+       TRUE ~ &quot;Trajectory 2: long-term limitations with intermittent serious episodes&quot;
+    )
+  )</code></pre>
+<p>These will be saved as <code>.csv</code>:</p>
+<pre class="r"><code>write_csv(x = codes_final, path = &quot;./outputs/quebec_palliative_icd10_codes.csv&quot;)</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>

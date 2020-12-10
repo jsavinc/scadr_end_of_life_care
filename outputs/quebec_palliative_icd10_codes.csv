@@ -1,361 +1,361 @@
-code_decimal
-A52.0
-A52.1
-A52.2
-A52.3
-A52.7
-A81.0
-A81.2
-B15
-B16
-B17
-B18
-B19
-B20
-B21
-B22
-B23
-B24
-C00
-C01
-C02
-C03
-C04
-C05
-C06
-C07
-C08
-C09
-C10
-C11
-C12
-C13
-C14
-C15
-C16
-C17
-C18
-C19
-C20
-C21
-C22
-C23
-C24
-C25
-C26
-C30
-C31
-C32
-C33
-C34
-C37
-C38
-C39
-C40
-C41
-C43
-C44
-C45
-C46
-C47
-C48
-C49
-C50
-C51
-C52
-C53
-C54
-C55
-C56
-C57
-C58
-C60
-C61
-C62
-C63
-C64
-C65
-C66
-C67
-C68
-C69
-C70
-C71
-C72
-C73
-C74
-C75
-C76
-C77
-C78
-C79
-C80
-C81
-C82
-C83
-C84
-C85
-C88
-C90
-C91
-C92
-C93
-C94
-C95
-C96
-C97
-D32
-D33
-D37
-D38
-D39
-D40
-D41
-D42
-D43
-D44
-D45
-D46
-D47
-D48
-D60
-D61
-E10
-E11
-E12
-E13
-E14
-E70
-E71
-E72
-E75
-E76
-E77
-E84
-F00
-F01
-F03
-F05
-F06
-G03
-G04
-G05
-G07
-G10
-G11
-G12
-G20
-G21
-G22
-G23
-G30
-G31
-G32
-G35
-G36
-G37
-G47.8
-G51.8
-G55.1
-G60.8
-G70
-G71
-G72
-G73
-G80
-G81
-G82
-G83
-G90
-G91
-G92
-G93
-G94
-G95
-G96
-G97
-G98
-G99
-I23.1
-I23.2
-I23.3
-I23.8
-I25
-I27
-I42
-I43
-I50
-I51
-I52.0
-I60
-I61
-I62
-I63
-I64
-I67
-I68.8
-I69
-I70
-I73
-I74
-I79.2
-I97.0
-I97.1
-I97.8
-I98.0
-I98.1
-I98.8
-J40
-J41
-J42
-J43
-J44
-J47
-J60
-J61
-J62
-J66
-J80
-J84.1
-J95.1
-J95.2
-J95.3
-J96
-J98.0
-J98.1
-J98.2
-J98.3
-J98.4
-K44
-K50
-K51
-K55
-K56
-K70
-K71
-K72
-K73
-K74
-K75
-K76
-K77
-K85
-K86
-K87.1
-K90
-L30.5
-L40
-L41
-L42
-L44.0
-L93
-L94.5
-M05
-M06
-M13
-M15
-M21
-M30
-M31
-M32
-M33
-M34
-M35
-M40
-M41
-M42
-M43
-M45
-M46
-M47
-M48
-M49
-M50
-M51
-M53
-M54
-M63.8
-M80
-M81
-M82.0
-M82.1
-M84.3
-M84.4
-M86
-M87
-M88
-M90.7
-M96.1
-N02
-N03
-N04
-N05
-N11
-N12
-N13.6
-N16.0
-N18
-N19
-N25
-N31.2
-N31.8
-N31.9
-N82
-Q01
-Q02
-Q03
-Q04
-Q05
-Q06
-Q07.8
-Q07.9
-Q20
-Q21
-Q22
-Q23
-Q24
-Q25
-Q26
-Q27
-Q28
-Q31
-Q33
-Q40
-Q41
-Q42
-Q43
-Q44
-Q45
-Q60
-Q61
-Q62
-Q63
-Q64
-Q65
-Q66
-Q67
-Q68
-Q71.4
-Q75
-Q76
-Q77
-Q78
-Q79
-Q85.0
-Q86
-Q87
-Q89
-Q90
-Q91
-Q92
-Q93
-Q95
-Q96
-Q97
-Q99
-R06.0
-R06.2
-R06.3
-R06.4
-R06.5
-R06.8
+code_decimal,trajectory
+A52.0,Trajectory 2: long-term limitations with intermittent serious episodes
+A52.1,Trajectory 2: long-term limitations with intermittent serious episodes
+A52.2,Trajectory 2: long-term limitations with intermittent serious episodes
+A52.3,Trajectory 2: long-term limitations with intermittent serious episodes
+A52.7,Trajectory 2: long-term limitations with intermittent serious episodes
+A81.0,Trajectory 2: long-term limitations with intermittent serious episodes
+A81.2,Trajectory 2: long-term limitations with intermittent serious episodes
+B15,Trajectory 2: long-term limitations with intermittent serious episodes
+B16,Trajectory 2: long-term limitations with intermittent serious episodes
+B17,Trajectory 2: long-term limitations with intermittent serious episodes
+B18,Trajectory 2: long-term limitations with intermittent serious episodes
+B19,Trajectory 2: long-term limitations with intermittent serious episodes
+B20,Trajectory 2: long-term limitations with intermittent serious episodes
+B21,Trajectory 2: long-term limitations with intermittent serious episodes
+B22,Trajectory 2: long-term limitations with intermittent serious episodes
+B23,Trajectory 2: long-term limitations with intermittent serious episodes
+B24,Trajectory 2: long-term limitations with intermittent serious episodes
+C00,Trajectory 1: short period of evident decline
+C01,Trajectory 1: short period of evident decline
+C02,Trajectory 1: short period of evident decline
+C03,Trajectory 1: short period of evident decline
+C04,Trajectory 1: short period of evident decline
+C05,Trajectory 1: short period of evident decline
+C06,Trajectory 1: short period of evident decline
+C07,Trajectory 1: short period of evident decline
+C08,Trajectory 1: short period of evident decline
+C09,Trajectory 1: short period of evident decline
+C10,Trajectory 1: short period of evident decline
+C11,Trajectory 1: short period of evident decline
+C12,Trajectory 1: short period of evident decline
+C13,Trajectory 1: short period of evident decline
+C14,Trajectory 1: short period of evident decline
+C15,Trajectory 1: short period of evident decline
+C16,Trajectory 1: short period of evident decline
+C17,Trajectory 1: short period of evident decline
+C18,Trajectory 1: short period of evident decline
+C19,Trajectory 1: short period of evident decline
+C20,Trajectory 1: short period of evident decline
+C21,Trajectory 1: short period of evident decline
+C22,Trajectory 1: short period of evident decline
+C23,Trajectory 1: short period of evident decline
+C24,Trajectory 1: short period of evident decline
+C25,Trajectory 1: short period of evident decline
+C26,Trajectory 1: short period of evident decline
+C30,Trajectory 1: short period of evident decline
+C31,Trajectory 1: short period of evident decline
+C32,Trajectory 1: short period of evident decline
+C33,Trajectory 1: short period of evident decline
+C34,Trajectory 1: short period of evident decline
+C37,Trajectory 1: short period of evident decline
+C38,Trajectory 1: short period of evident decline
+C39,Trajectory 1: short period of evident decline
+C40,Trajectory 1: short period of evident decline
+C41,Trajectory 1: short period of evident decline
+C43,Trajectory 1: short period of evident decline
+C44,Trajectory 1: short period of evident decline
+C45,Trajectory 1: short period of evident decline
+C46,Trajectory 1: short period of evident decline
+C47,Trajectory 1: short period of evident decline
+C48,Trajectory 1: short period of evident decline
+C49,Trajectory 1: short period of evident decline
+C50,Trajectory 1: short period of evident decline
+C51,Trajectory 1: short period of evident decline
+C52,Trajectory 1: short period of evident decline
+C53,Trajectory 1: short period of evident decline
+C54,Trajectory 1: short period of evident decline
+C55,Trajectory 1: short period of evident decline
+C56,Trajectory 1: short period of evident decline
+C57,Trajectory 1: short period of evident decline
+C58,Trajectory 1: short period of evident decline
+C60,Trajectory 1: short period of evident decline
+C61,Trajectory 1: short period of evident decline
+C62,Trajectory 1: short period of evident decline
+C63,Trajectory 1: short period of evident decline
+C64,Trajectory 1: short period of evident decline
+C65,Trajectory 1: short period of evident decline
+C66,Trajectory 1: short period of evident decline
+C67,Trajectory 1: short period of evident decline
+C68,Trajectory 1: short period of evident decline
+C69,Trajectory 1: short period of evident decline
+C70,Trajectory 1: short period of evident decline
+C71,Trajectory 1: short period of evident decline
+C72,Trajectory 1: short period of evident decline
+C73,Trajectory 1: short period of evident decline
+C74,Trajectory 1: short period of evident decline
+C75,Trajectory 1: short period of evident decline
+C76,Trajectory 1: short period of evident decline
+C77,Trajectory 1: short period of evident decline
+C78,Trajectory 1: short period of evident decline
+C79,Trajectory 1: short period of evident decline
+C80,Trajectory 1: short period of evident decline
+C81,Trajectory 1: short period of evident decline
+C82,Trajectory 1: short period of evident decline
+C83,Trajectory 1: short period of evident decline
+C84,Trajectory 1: short period of evident decline
+C85,Trajectory 1: short period of evident decline
+C88,Trajectory 1: short period of evident decline
+C90,Trajectory 1: short period of evident decline
+C91,Trajectory 1: short period of evident decline
+C92,Trajectory 1: short period of evident decline
+C93,Trajectory 1: short period of evident decline
+C94,Trajectory 1: short period of evident decline
+C95,Trajectory 1: short period of evident decline
+C96,Trajectory 1: short period of evident decline
+C97,Trajectory 1: short period of evident decline
+D32,Trajectory 1: short period of evident decline
+D33,Trajectory 1: short period of evident decline
+D37,Trajectory 1: short period of evident decline
+D38,Trajectory 1: short period of evident decline
+D39,Trajectory 1: short period of evident decline
+D40,Trajectory 1: short period of evident decline
+D41,Trajectory 1: short period of evident decline
+D42,Trajectory 1: short period of evident decline
+D43,Trajectory 1: short period of evident decline
+D44,Trajectory 1: short period of evident decline
+D45,Trajectory 1: short period of evident decline
+D46,Trajectory 1: short period of evident decline
+D47,Trajectory 1: short period of evident decline
+D48,Trajectory 1: short period of evident decline
+D60,Trajectory 2: long-term limitations with intermittent serious episodes
+D61,Trajectory 2: long-term limitations with intermittent serious episodes
+E10,Trajectory 2: long-term limitations with intermittent serious episodes
+E11,Trajectory 2: long-term limitations with intermittent serious episodes
+E12,Trajectory 2: long-term limitations with intermittent serious episodes
+E13,Trajectory 2: long-term limitations with intermittent serious episodes
+E14,Trajectory 2: long-term limitations with intermittent serious episodes
+E70,Trajectory 2: long-term limitations with intermittent serious episodes
+E71,Trajectory 2: long-term limitations with intermittent serious episodes
+E72,Trajectory 2: long-term limitations with intermittent serious episodes
+E75,Trajectory 2: long-term limitations with intermittent serious episodes
+E76,Trajectory 2: long-term limitations with intermittent serious episodes
+E77,Trajectory 2: long-term limitations with intermittent serious episodes
+E84,Trajectory 2: long-term limitations with intermittent serious episodes
+F00,Trajectory 3: prolonged dwindling
+F01,Trajectory 3: prolonged dwindling
+F03,Trajectory 3: prolonged dwindling
+F05,Trajectory 3: prolonged dwindling
+F06,Trajectory 3: prolonged dwindling
+G03,Trajectory 3: prolonged dwindling
+G04,Trajectory 3: prolonged dwindling
+G05,Trajectory 3: prolonged dwindling
+G07,Trajectory 3: prolonged dwindling
+G10,Trajectory 3: prolonged dwindling
+G11,Trajectory 3: prolonged dwindling
+G12,Trajectory 3: prolonged dwindling
+G20,Trajectory 3: prolonged dwindling
+G21,Trajectory 3: prolonged dwindling
+G22,Trajectory 3: prolonged dwindling
+G23,Trajectory 3: prolonged dwindling
+G30,Trajectory 3: prolonged dwindling
+G31,Trajectory 3: prolonged dwindling
+G32,Trajectory 3: prolonged dwindling
+G35,Trajectory 3: prolonged dwindling
+G36,Trajectory 3: prolonged dwindling
+G37,Trajectory 3: prolonged dwindling
+G47.8,Trajectory 3: prolonged dwindling
+G51.8,Trajectory 3: prolonged dwindling
+G55.1,Trajectory 3: prolonged dwindling
+G60.8,Trajectory 3: prolonged dwindling
+G70,Trajectory 3: prolonged dwindling
+G71,Trajectory 3: prolonged dwindling
+G72,Trajectory 3: prolonged dwindling
+G73,Trajectory 3: prolonged dwindling
+G80,Trajectory 3: prolonged dwindling
+G81,Trajectory 3: prolonged dwindling
+G82,Trajectory 3: prolonged dwindling
+G83,Trajectory 3: prolonged dwindling
+G90,Trajectory 3: prolonged dwindling
+G91,Trajectory 3: prolonged dwindling
+G92,Trajectory 3: prolonged dwindling
+G93,Trajectory 3: prolonged dwindling
+G94,Trajectory 3: prolonged dwindling
+G95,Trajectory 3: prolonged dwindling
+G96,Trajectory 3: prolonged dwindling
+G97,Trajectory 3: prolonged dwindling
+G98,Trajectory 3: prolonged dwindling
+G99,Trajectory 3: prolonged dwindling
+I23.1,Trajectory 2: long-term limitations with intermittent serious episodes
+I23.2,Trajectory 2: long-term limitations with intermittent serious episodes
+I23.3,Trajectory 2: long-term limitations with intermittent serious episodes
+I23.8,Trajectory 2: long-term limitations with intermittent serious episodes
+I25,Trajectory 2: long-term limitations with intermittent serious episodes
+I27,Trajectory 2: long-term limitations with intermittent serious episodes
+I42,Trajectory 2: long-term limitations with intermittent serious episodes
+I43,Trajectory 2: long-term limitations with intermittent serious episodes
+I50,Trajectory 2: long-term limitations with intermittent serious episodes
+I51,Trajectory 2: long-term limitations with intermittent serious episodes
+I52.0,Trajectory 2: long-term limitations with intermittent serious episodes
+I60,Trajectory 2: long-term limitations with intermittent serious episodes
+I61,Trajectory 2: long-term limitations with intermittent serious episodes
+I62,Trajectory 2: long-term limitations with intermittent serious episodes
+I63,Trajectory 2: long-term limitations with intermittent serious episodes
+I64,Trajectory 2: long-term limitations with intermittent serious episodes
+I67,Trajectory 2: long-term limitations with intermittent serious episodes
+I68.8,Trajectory 2: long-term limitations with intermittent serious episodes
+I69,Trajectory 2: long-term limitations with intermittent serious episodes
+I70,Trajectory 2: long-term limitations with intermittent serious episodes
+I73,Trajectory 2: long-term limitations with intermittent serious episodes
+I74,Trajectory 2: long-term limitations with intermittent serious episodes
+I79.2,Trajectory 2: long-term limitations with intermittent serious episodes
+I97.0,Trajectory 2: long-term limitations with intermittent serious episodes
+I97.1,Trajectory 2: long-term limitations with intermittent serious episodes
+I97.8,Trajectory 2: long-term limitations with intermittent serious episodes
+I98.0,Trajectory 2: long-term limitations with intermittent serious episodes
+I98.1,Trajectory 2: long-term limitations with intermittent serious episodes
+I98.8,Trajectory 2: long-term limitations with intermittent serious episodes
+J40,Trajectory 2: long-term limitations with intermittent serious episodes
+J41,Trajectory 2: long-term limitations with intermittent serious episodes
+J42,Trajectory 2: long-term limitations with intermittent serious episodes
+J43,Trajectory 2: long-term limitations with intermittent serious episodes
+J44,Trajectory 2: long-term limitations with intermittent serious episodes
+J47,Trajectory 2: long-term limitations with intermittent serious episodes
+J60,Trajectory 2: long-term limitations with intermittent serious episodes
+J61,Trajectory 2: long-term limitations with intermittent serious episodes
+J62,Trajectory 2: long-term limitations with intermittent serious episodes
+J66,Trajectory 2: long-term limitations with intermittent serious episodes
+J80,Trajectory 2: long-term limitations with intermittent serious episodes
+J84.1,Trajectory 2: long-term limitations with intermittent serious episodes
+J95.1,Trajectory 2: long-term limitations with intermittent serious episodes
+J95.2,Trajectory 2: long-term limitations with intermittent serious episodes
+J95.3,Trajectory 2: long-term limitations with intermittent serious episodes
+J96,Trajectory 2: long-term limitations with intermittent serious episodes
+J98.0,Trajectory 2: long-term limitations with intermittent serious episodes
+J98.1,Trajectory 2: long-term limitations with intermittent serious episodes
+J98.2,Trajectory 2: long-term limitations with intermittent serious episodes
+J98.3,Trajectory 2: long-term limitations with intermittent serious episodes
+J98.4,Trajectory 2: long-term limitations with intermittent serious episodes
+K44,Trajectory 2: long-term limitations with intermittent serious episodes
+K50,Trajectory 2: long-term limitations with intermittent serious episodes
+K51,Trajectory 2: long-term limitations with intermittent serious episodes
+K55,Trajectory 2: long-term limitations with intermittent serious episodes
+K56,Trajectory 2: long-term limitations with intermittent serious episodes
+K70,Trajectory 2: long-term limitations with intermittent serious episodes
+K71,Trajectory 2: long-term limitations with intermittent serious episodes
+K72,Trajectory 2: long-term limitations with intermittent serious episodes
+K73,Trajectory 2: long-term limitations with intermittent serious episodes
+K74,Trajectory 2: long-term limitations with intermittent serious episodes
+K75,Trajectory 2: long-term limitations with intermittent serious episodes
+K76,Trajectory 2: long-term limitations with intermittent serious episodes
+K77,Trajectory 2: long-term limitations with intermittent serious episodes
+K85,Trajectory 2: long-term limitations with intermittent serious episodes
+K86,Trajectory 2: long-term limitations with intermittent serious episodes
+K87.1,Trajectory 2: long-term limitations with intermittent serious episodes
+K90,Trajectory 2: long-term limitations with intermittent serious episodes
+L30.5,Trajectory 2: long-term limitations with intermittent serious episodes
+L40,Trajectory 2: long-term limitations with intermittent serious episodes
+L41,Trajectory 2: long-term limitations with intermittent serious episodes
+L42,Trajectory 2: long-term limitations with intermittent serious episodes
+L44.0,Trajectory 2: long-term limitations with intermittent serious episodes
+L93,Trajectory 2: long-term limitations with intermittent serious episodes
+L94.5,Trajectory 2: long-term limitations with intermittent serious episodes
+M05,Trajectory 2: long-term limitations with intermittent serious episodes
+M06,Trajectory 2: long-term limitations with intermittent serious episodes
+M13,Trajectory 2: long-term limitations with intermittent serious episodes
+M15,Trajectory 2: long-term limitations with intermittent serious episodes
+M21,Trajectory 2: long-term limitations with intermittent serious episodes
+M30,Trajectory 2: long-term limitations with intermittent serious episodes
+M31,Trajectory 2: long-term limitations with intermittent serious episodes
+M32,Trajectory 2: long-term limitations with intermittent serious episodes
+M33,Trajectory 2: long-term limitations with intermittent serious episodes
+M34,Trajectory 2: long-term limitations with intermittent serious episodes
+M35,Trajectory 2: long-term limitations with intermittent serious episodes
+M40,Trajectory 2: long-term limitations with intermittent serious episodes
+M41,Trajectory 2: long-term limitations with intermittent serious episodes
+M42,Trajectory 2: long-term limitations with intermittent serious episodes
+M43,Trajectory 2: long-term limitations with intermittent serious episodes
+M45,Trajectory 2: long-term limitations with intermittent serious episodes
+M46,Trajectory 2: long-term limitations with intermittent serious episodes
+M47,Trajectory 2: long-term limitations with intermittent serious episodes
+M48,Trajectory 2: long-term limitations with intermittent serious episodes
+M49,Trajectory 2: long-term limitations with intermittent serious episodes
+M50,Trajectory 2: long-term limitations with intermittent serious episodes
+M51,Trajectory 2: long-term limitations with intermittent serious episodes
+M53,Trajectory 2: long-term limitations with intermittent serious episodes
+M54,Trajectory 2: long-term limitations with intermittent serious episodes
+M63.8,Trajectory 2: long-term limitations with intermittent serious episodes
+M80,Trajectory 2: long-term limitations with intermittent serious episodes
+M81,Trajectory 2: long-term limitations with intermittent serious episodes
+M82.0,Trajectory 2: long-term limitations with intermittent serious episodes
+M82.1,Trajectory 2: long-term limitations with intermittent serious episodes
+M84.3,Trajectory 2: long-term limitations with intermittent serious episodes
+M84.4,Trajectory 2: long-term limitations with intermittent serious episodes
+M86,Trajectory 2: long-term limitations with intermittent serious episodes
+M87,Trajectory 2: long-term limitations with intermittent serious episodes
+M88,Trajectory 2: long-term limitations with intermittent serious episodes
+M90.7,Trajectory 2: long-term limitations with intermittent serious episodes
+M96.1,Trajectory 2: long-term limitations with intermittent serious episodes
+N02,Trajectory 2: long-term limitations with intermittent serious episodes
+N03,Trajectory 2: long-term limitations with intermittent serious episodes
+N04,Trajectory 2: long-term limitations with intermittent serious episodes
+N05,Trajectory 2: long-term limitations with intermittent serious episodes
+N11,Trajectory 2: long-term limitations with intermittent serious episodes
+N12,Trajectory 2: long-term limitations with intermittent serious episodes
+N13.6,Trajectory 2: long-term limitations with intermittent serious episodes
+N16.0,Trajectory 2: long-term limitations with intermittent serious episodes
+N18,Trajectory 2: long-term limitations with intermittent serious episodes
+N19,Trajectory 2: long-term limitations with intermittent serious episodes
+N25,Trajectory 2: long-term limitations with intermittent serious episodes
+N31.2,Trajectory 2: long-term limitations with intermittent serious episodes
+N31.8,Trajectory 2: long-term limitations with intermittent serious episodes
+N31.9,Trajectory 2: long-term limitations with intermittent serious episodes
+N82,Trajectory 2: long-term limitations with intermittent serious episodes
+Q01,Trajectory 2: long-term limitations with intermittent serious episodes
+Q02,Trajectory 2: long-term limitations with intermittent serious episodes
+Q03,Trajectory 2: long-term limitations with intermittent serious episodes
+Q04,Trajectory 2: long-term limitations with intermittent serious episodes
+Q05,Trajectory 2: long-term limitations with intermittent serious episodes
+Q06,Trajectory 2: long-term limitations with intermittent serious episodes
+Q07.8,Trajectory 2: long-term limitations with intermittent serious episodes
+Q07.9,Trajectory 2: long-term limitations with intermittent serious episodes
+Q20,Trajectory 2: long-term limitations with intermittent serious episodes
+Q21,Trajectory 2: long-term limitations with intermittent serious episodes
+Q22,Trajectory 2: long-term limitations with intermittent serious episodes
+Q23,Trajectory 2: long-term limitations with intermittent serious episodes
+Q24,Trajectory 2: long-term limitations with intermittent serious episodes
+Q25,Trajectory 2: long-term limitations with intermittent serious episodes
+Q26,Trajectory 2: long-term limitations with intermittent serious episodes
+Q27,Trajectory 2: long-term limitations with intermittent serious episodes
+Q28,Trajectory 2: long-term limitations with intermittent serious episodes
+Q31,Trajectory 2: long-term limitations with intermittent serious episodes
+Q33,Trajectory 2: long-term limitations with intermittent serious episodes
+Q40,Trajectory 2: long-term limitations with intermittent serious episodes
+Q41,Trajectory 2: long-term limitations with intermittent serious episodes
+Q42,Trajectory 2: long-term limitations with intermittent serious episodes
+Q43,Trajectory 2: long-term limitations with intermittent serious episodes
+Q44,Trajectory 2: long-term limitations with intermittent serious episodes
+Q45,Trajectory 2: long-term limitations with intermittent serious episodes
+Q60,Trajectory 2: long-term limitations with intermittent serious episodes
+Q61,Trajectory 2: long-term limitations with intermittent serious episodes
+Q62,Trajectory 2: long-term limitations with intermittent serious episodes
+Q63,Trajectory 2: long-term limitations with intermittent serious episodes
+Q64,Trajectory 2: long-term limitations with intermittent serious episodes
+Q65,Trajectory 2: long-term limitations with intermittent serious episodes
+Q66,Trajectory 2: long-term limitations with intermittent serious episodes
+Q67,Trajectory 2: long-term limitations with intermittent serious episodes
+Q68,Trajectory 2: long-term limitations with intermittent serious episodes
+Q71.4,Trajectory 2: long-term limitations with intermittent serious episodes
+Q75,Trajectory 2: long-term limitations with intermittent serious episodes
+Q76,Trajectory 2: long-term limitations with intermittent serious episodes
+Q77,Trajectory 2: long-term limitations with intermittent serious episodes
+Q78,Trajectory 2: long-term limitations with intermittent serious episodes
+Q79,Trajectory 2: long-term limitations with intermittent serious episodes
+Q85.0,Trajectory 2: long-term limitations with intermittent serious episodes
+Q86,Trajectory 2: long-term limitations with intermittent serious episodes
+Q87,Trajectory 2: long-term limitations with intermittent serious episodes
+Q89,Trajectory 2: long-term limitations with intermittent serious episodes
+Q90,Trajectory 2: long-term limitations with intermittent serious episodes
+Q91,Trajectory 2: long-term limitations with intermittent serious episodes
+Q92,Trajectory 2: long-term limitations with intermittent serious episodes
+Q93,Trajectory 2: long-term limitations with intermittent serious episodes
+Q95,Trajectory 2: long-term limitations with intermittent serious episodes
+Q96,Trajectory 2: long-term limitations with intermittent serious episodes
+Q97,Trajectory 2: long-term limitations with intermittent serious episodes
+Q99,Trajectory 2: long-term limitations with intermittent serious episodes
+R06.0,Trajectory 2: long-term limitations with intermittent serious episodes
+R06.2,Trajectory 2: long-term limitations with intermittent serious episodes
+R06.3,Trajectory 2: long-term limitations with intermittent serious episodes
+R06.4,Trajectory 2: long-term limitations with intermittent serious episodes
+R06.5,Trajectory 2: long-term limitations with intermittent serious episodes
+R06.8,Trajectory 2: long-term limitations with intermittent serious episodes
