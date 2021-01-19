@@ -1,0 +1,441 @@
+---
+title: "Producing tables for Migrations paper from safe haven exported data"
+author: "Jan Savinc"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: 
+  html_document:
+  toc: true
+toc_float: true
+editor_options: 
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Libraries
+
+```{r, warning=FALSE}
+library(tidyverse)
+library(readxl)  # for reading excel files
+library(gt)  # for formating tables
+library(flextable)  # for formating tables
+library(knitr)
+```
+
+# Overview
+
+This script loads the file `MigrationConf.xlsx`, and extracts data from the tables therein which we can then format in various ways for the paper!
+
+# Load exported data
+
+```{r}
+exported_file <- "./raw/MigrationConf.xlsx"
+available_sheets <- excel_sheets(exported_file)
+```
+
+Loading the data won't be straightforward - there are multiple tables in a sheet, so we'll need to specify where those tables are.
+
+## `P` sheet
+
+The `P` sheet contains descriptives - 2-way breakdowns of Urban-rural (6 category) indicator and other variables. 
+
+```{r}
+## obtained by copying from the excel table using datapasta::vector_paste()
+urban_rural_6_categories <- c("Large Urban Areas", "Other Urban Areas", "Accessible Small Towns", "Remote Small Towns", "Accessible Rural", "Remote Rural")
+
+odds <- function(nums) {  # return odd numbers in range
+  nums[(nums %% 2) != 0]
+}
+  
+urban_rural_breakdown <- 
+  read_excel(
+    path = exported_file,
+    sheet = "P",
+    range = "O31:U31",
+    col_names = c(urban_rural_6_categories, "total")
+  ) %>% 
+  pivot_longer(cols = everything(), names_to = "urban_rural_6_categories", values_to = "n")
+
+total_n <- urban_rural_breakdown$n[urban_rural_breakdown$urban_rural_6_categories=="total"]
+
+variables_in_p <- c("sex","age_at_death","marital_status_at_death","country_of_birth")
+
+data_in_d <- map2(
+  .x = variables_in_p,
+  .y = c("N7:U10", "N11:U16", "N17:U24", "N25:U30"),  # manually found ranges of data in the file
+  .f = ~read_excel(
+          path = exported_file,
+          sheet = "P",
+          range = .y,  # pass the range for each variable
+          col_names = c(.x, urban_rural_6_categories, "total")  # construct column names from variable of interest & urban-rural breakdown
+        ) %>%
+        slice(odds(1:nrow(.)))  # keep the odd numbered rows only - the even-numbered rows contain percentages of total and we can calculate these ourselves
+  ) %>% set_names(variables_in_p)
+```
+
+### Missing value summary
+
+```{r}
+missing_value_summary <-
+  read_excel(
+    path = exported_file,
+    sheet = "P",
+    range = "C12:H15",  # skipping the I column with total percentage (which is 100% anyway)
+    col_names = c("variable", "n_valid", "percent_valid", "n_missing", "percent_missing", "n_total")
+  )
+```
+
+## `D` sheet
+
+The `D` sheet contains a 3-way breakdown of Urban-rural (6 category) indicator, country of birth, and living alone.
+
+It looks like there were more breakdowns planned but not completed.
+
+```{r}
+country_of_birth_categories <- c("Scotland", "Rest of UK", "Outside UK", "All CoB")  # obtained by copying from the excel table using datapasta::vector_paste()
+
+
+living_alone_table_header <- c(  # compile the column names to match what's in the spreadsheet, with a prefix that we'll use to split the columns up later
+  "urban_rural_6_categories",
+  paste0("alone_", country_of_birth_categories),
+  paste0("total_", country_of_birth_categories)
+  )
+
+living_alone_by_cob_and_urban_rural <-
+  read_excel(
+    path = exported_file,
+    sheet = "D",
+    range = "C14:K25",
+    col_names = living_alone_table_header
+  ) %>%
+  slice(odds(1:nrow(.))) %>%
+  pivot_longer(cols = -urban_rural_6_categories, names_to = c("living_alone","country_of_birth"), names_pattern = "^(alone|total)\\_(.*)$", values_to = "n")  # split the columns containing multiple variables (living alone or not & CoB)
+
+living_alone_by_cob <-
+  read_excel(
+    path = exported_file,
+    sheet = "D",
+    range = "D26:K26",
+    col_names = living_alone_table_header[-1],  # remove the first variable in the constructed column names from above since we're not using the urban rural column here
+  ) %>%
+  pivot_longer(cols = everything(), names_to = c("living_alone","country_of_birth"), names_pattern = "^(alone|total)\\_(.*)$", values_to = "n")  # split the columns containing multiple variables (living alone or not & CoB)
+
+## test that we get the right numbers
+living_alone_by_cob_and_urban_rural %>%
+  group_by(living_alone, country_of_birth) %>%
+  summarise(n_sum = sum(n), .groups="drop") %>%
+  left_join(living_alone_by_cob)
+```
+
+## `M1` to `M3`
+
+These are logistic models:
+
+* M1 is a stratified regression (stratified on 3 urban-rural categories, meaning three separate models) of living alone on the other variables: time between census and death, marital status, age at death, country of birth, tenure (housing), and sex
+* M2 is the same model as M1 but the dependent variable is dying in an institution
+* M3 is like M1 but the 3 categories of urban-rurality are included as an independent variable
+
+As far as I can tell, for the purposes of the paper, M1 and M2 were used, and only the Rural (remote and accessible) stratum was considered (interpreted as the destination of migrations).
+
+There are univariate models in the bottom of each sheet.
+
+### M1
+
+```{r}
+regression_columns <- c("b", "se", "Wald", "df", "p_value", "or")  # copied from excel & adjusted for more r-like labelling
+
+m1_regression_variables <- c(
+  "country_of_birth",
+  "age_at_death",
+  "sex_at_death",
+  "housing_tenure",
+  "time_to_death",
+  "marital_status"
+)
+
+m1_univariate_regression_ranges <- c(
+  "C125:I128", # CoB  - this is lsited in the first step of the regressio nrather than unadjusted regressions later!
+  "C285:I288",  # age
+  "C300:I301",  # sex
+  "C314:I317",  # housing tenure
+  "C330:I337",  # time to death
+  "C348:I352"  # marital status
+)
+
+
+m1_remote_univariate_regressions <-
+  map2(
+    .x = m1_regression_variables,
+    .y = m1_univariate_regression_ranges,
+    .f = 
+      ~read_excel(
+      path = exported_file,
+      sheet = "M1",
+      range = .y,
+      col_names = c(.x, regression_columns),  # remove the first variable in the constructed column names from above since we're not using the urban rural column here
+      col_types = c("text",rep("numeric",times=6))
+    )
+  ) %>% set_names(m1_regression_variables)
+
+## The country of birth value labels are missing so we need to change them manually!
+regression_country_of_birth_categories <- country_of_birth_categories[-4]
+regression_country_of_birth_categories[1] <- "Scotland (ref: Scotland)"
+m1_remote_univariate_regressions$country_of_birth$country_of_birth[1:3] <- regression_country_of_birth_categories
+
+## The sex variable is binary and has only one entry - to make it have the same format as the others we add another row for the reference column
+m1_remote_univariate_regressions$sex_at_death <-
+  m1_remote_univariate_regressions$sex_at_death %>%
+  add_case(sex_at_death = m1_remote_univariate_regressions$sex_at_death$sex_at_death[1], .before=1)
+m1_remote_univariate_regressions$sex_at_death$sex_at_death[2] <- "male"
+  
+
+m1_multiple_regression_ranges <- c(
+  "C239:I241",  # CoB
+  "C242:I244",  # age
+  "C245:I245",  # sex 
+  "C246:I248",  # housing tenure
+  "C249:I255",  # time to death
+  "C256:I259",  # marital status
+  "C260:I260"  #  constant
+)
+
+m1_remote_multiple_regressions <-
+  map2(
+    .x = c(m1_regression_variables,"constant"),
+    .y = m1_multiple_regression_ranges,
+    .f = 
+      ~read_excel(
+      path = exported_file,
+      sheet = "M1",
+      range = .y,
+      col_names = c(.x, regression_columns),  # remove the first variable in the constructed column names from above since we're not using the urban rural column here
+      col_types = c("text",rep("numeric",times=6))
+    )
+  ) %>% set_names(c(m1_regression_variables,"constant"))
+
+## the variable labels are missing in the multiple regression, but they can be copied over from the univariate regressions!
+m1_remote_multiple_regressions$country_of_birth$country_of_birth <- m1_remote_univariate_regressions$country_of_birth$country_of_birth[1:3]
+m1_remote_multiple_regressions$age_at_death$age_at_death <- m1_remote_univariate_regressions$age_at_death$age_at_death[1:3]
+m1_remote_multiple_regressions$sex_at_death <-  # we'll create an extra row for the sex variable which is binary & didn't have a separate reference entry like all the others
+  m1_remote_multiple_regressions$sex_at_death %>%
+  add_case(sex_at_death=NA, .before = 1)
+m1_remote_multiple_regressions$sex_at_death$sex_at_death <- m1_remote_univariate_regressions$sex_at_death$sex_at_death[1:2]
+m1_remote_multiple_regressions$housing_tenure$housing_tenure <- m1_remote_univariate_regressions$housing_tenure$housing_tenure[1:3]
+m1_remote_multiple_regressions$time_to_death$time_to_death <- m1_remote_univariate_regressions$time_to_death$time_to_death[1:7]
+m1_remote_multiple_regressions$marital_status$marital_status <- m1_remote_univariate_regressions$marital_status$marital_status[1:4]
+```
+
+
+### M2
+
+```{r}
+m2_regression_variables <- c(
+  "country_of_birth",
+  "age_at_death",
+  "sex_at_death",
+  "housing_tenure",
+  "time_to_death",
+  "living_alone",
+  "marital_status"
+)
+
+m2_univariate_regression_ranges <- c(
+  "C117:I120", # CoB  - this is lsited in the first step of the regressio nrather than unadjusted regressions later!
+  "C322:I325",  # age
+  "C336:I337",  # sex
+  "C348:I351",  # housing tenure
+  "C362:I369",  # time to death
+  "C380:I381",  # living alone
+  "C392:I396"  # marital status
+)
+
+
+m2_remote_univariate_regressions <-
+  map2(
+    .x = m2_regression_variables,
+    .y = m2_univariate_regression_ranges,
+    .f = 
+      ~read_excel(
+      path = exported_file,
+      sheet = "M2",
+      range = .y,
+      col_names = c(.x, regression_columns),  # remove the first variable in the constructed column names from above since we're not using the urban rural column here
+      col_types = c("text",rep("numeric",times=6))
+    )
+  ) %>% set_names(m2_regression_variables)
+
+## living alone and sex are binary, for both we should set a reference level so they are in the same format as the other variables
+m2_remote_univariate_regressions$sex_at_death <-
+  m2_remote_univariate_regressions$sex_at_death %>%
+  add_case(sex_at_death = m2_remote_univariate_regressions$sex_at_death$sex_at_death[1], .before=1)
+  
+m2_remote_univariate_regressions$living_alone <-
+  m2_remote_univariate_regressions$living_alone %>%
+  add_case(living_alone = m2_remote_univariate_regressions$living_alone$living_alone[1], .before=1)
+m2_remote_univariate_regressions$living_alone$living_alone[1] <- "alone (ref: alone)"
+m2_remote_univariate_regressions$living_alone$living_alone[2] <- "with others"
+
+## all value labels are missing here so we can copy them from M1, except for living alone
+for (variable in names(m1_remote_univariate_regressions)) {
+  m2_remote_univariate_regressions[[variable]][[variable]] <- m1_remote_univariate_regressions[[variable]][[variable]]
+}
+
+m2_multiple_regression_ranges <- c(
+  "C277:I279",  # CoB
+  "C280:I282",  # age
+  "C283:I283",  # sex 
+  "C284:I286",  # housing tenure
+  "C287:I293",  # time to death
+  "C294:I294",  # living alone
+  "C295:I298",  # living alone
+  "C299:I299"  #  constant
+)
+
+m2_remote_multiple_regressions <-
+  map2(
+    .x = c(m2_regression_variables,"constant"),  # we include the constant term here also
+    .y = m2_multiple_regression_ranges,
+    .f = 
+      ~read_excel(
+      path = exported_file,
+      sheet = "M2",
+      range = .y,
+      col_names = c(.x, regression_columns),  # remove the first variable in the constructed column names from above since we're not using the urban rural column here
+      col_types = c("text",rep("numeric",times=6))
+    )
+  ) %>% set_names(c(m2_regression_variables,"constant"))
+
+
+## living alone and sex are binary, for both we should set a reference level so they are in the same format as the other variables
+m2_remote_multiple_regressions$sex_at_death <-
+  m2_remote_multiple_regressions$sex_at_death %>%
+  add_case(sex_at_death = m2_remote_multiple_regressions$sex_at_death$sex_at_death[1], .before=1)
+  
+m2_remote_multiple_regressions$living_alone <-
+  m2_remote_multiple_regressions$living_alone %>%
+  add_case(living_alone = m2_remote_univariate_regressions$living_alone$living_alone[1], .before=1)
+
+## the variable labels are missing in the multiple regression, but they can be copied over from the univariate regressions!
+for (variable in names(m2_remote_univariate_regressions)) {
+  number_entries <- length(m2_remote_multiple_regressions[[variable]][[variable]])
+  m2_remote_multiple_regressions[[variable]][[variable]] <-
+    m2_remote_univariate_regressions[[variable]][[variable]][1:number_entries]
+}
+```
+
+
+# Notes on data
+
+* Individuals with missing marital status were excluded due to very small N;
+* Logistic models used complete data only
+
+
+# Processed tables
+
+```{r}
+tables <- list()
+
+tables$m1_remote_unadjusted_odds <-
+  map2_df(
+    .x = m1_remote_univariate_regressions,
+    .y = names(m1_remote_univariate_regressions),
+    .f = function(x,y) {
+      tbl <- select(x, 1, or) %>%
+      mutate(variable = y) %>%
+      rename(level=1) %>%
+      filter(level!="Constant") %>%
+      relocate(variable, level, or)
+      
+      tbl$level[1] <- str_replace(string = tbl$level[1], pattern=".*ref\\:\\s(.*)\\)", replacement="Reference: \\1")  # rename the reference level
+      # tbl$or[1] <- 1L  # set reference OR to 1
+      tbl$or[1] <- NA  # set reference OR to NA
+      return(tbl)
+    } 
+  )
+
+tables$m1_remote_adjusted_odds <-
+  map2_df(
+    .x = m1_remote_multiple_regressions[names(m1_remote_multiple_regressions)!="constant"],  # don't incldue the Constant term
+    .y = names(m1_remote_univariate_regressions[names(m1_remote_multiple_regressions)!="constant"]),  # see above comment
+    .f = function(x,y) {
+      tbl <- select(x, 1, or) %>%
+      mutate(variable = y) %>%
+      rename(level=1) %>%
+      filter(level!="Constant") %>%
+      relocate(variable, level, or)
+      
+      tbl$level[1] <- str_replace(string = tbl$level[1], pattern=".*ref\\:\\s(.*)\\)", replacement="Reference: \\1")  # rename the reference level
+      # tbl$or[1] <- 1L  # set reference OR to 1
+      tbl$or[1] <- NA  # set reference OR to NA
+      return(tbl)
+    } 
+  )
+
+tables$m1_odds <-
+  full_join(
+    x = tables$m1_remote_unadjusted_odds %>% rename(unadjusted_or = or),
+    y = tables$m1_remote_adjusted_odds %>% rename(adjusted_or = or),
+    by = c("variable", "level")
+  )
+
+
+tables$m2_remote_unadjusted_odds <-
+  map2_df(
+    .x = m2_remote_univariate_regressions,
+    .y = names(m2_remote_univariate_regressions),
+    .f = function(x,y) {
+      tbl <- select(x, 1, or) %>%
+      mutate(variable = y) %>%
+      rename(level=1) %>%
+      filter(level!="Constant") %>%
+      relocate(variable, level, or)
+      
+      tbl$level[1] <- str_replace(string = tbl$level[1], pattern=".*ref\\:\\s(.*)\\)", replacement="Reference: \\1")  # rename the reference level
+      # tbl$or[1] <- 1L  # set reference OR to 1
+      tbl$or[1] <- NA  # set reference OR to NA
+      return(tbl)
+    } 
+  )
+
+tables$m2_remote_adjusted_odds <-
+  map2_df(
+    .x = m2_remote_multiple_regressions[names(m2_remote_multiple_regressions)!="constant"],  # don't incldue the Constant term
+    .y = names(m2_remote_univariate_regressions[names(m2_remote_multiple_regressions)!="constant"]),  # see above comment
+    .f = function(x,y) {
+      tbl <- select(x, 1, or) %>%
+      mutate(variable = y) %>%
+      rename(level=1) %>%
+      filter(level!="Constant") %>%
+      relocate(variable, level, or)
+      
+      tbl$level[1] <- str_replace(string = tbl$level[1], pattern=".*ref\\:\\s(.*)\\)", replacement="Reference: \\1")  # rename the reference level
+      # tbl$or[1] <- 1L  # set reference OR to 1
+      tbl$or[1] <- NA  # set reference OR to NA
+      return(tbl)
+    } 
+  )
+
+tables$m2_odds <-
+  full_join(
+    x = tables$m2_remote_unadjusted_odds %>% rename(unadjusted_or = or),
+    y = tables$m2_remote_adjusted_odds %>% rename(adjusted_or = or),
+    by = c("variable", "level")
+  )
+# TODO: look at formatting tables with `gt`
+```
+
+# Processed figures
+
+```{r}
+figures <- list()
+
+# TODO: complete below!
+figures$alone_by_country_of_birth_and_urban_rural <- ggplot(
+  data = living_alone_by_cob_and_urban_rural %>% pivot_wider(names_from=living_alone, values_from=n) %>% mutate(proportion=alone/total) %>% filter(country_of_birth!="All CoB")
+) +
+  geom_col(aes(x=urban_rural_6_categories, y=proportion, group=country_of_birth, fill=country_of_birth), position = position_dodge()) +
+  NULL
+```
+
