@@ -22,6 +22,7 @@ library(readxl)  # for reading excel files
 library(gt)  # for formating tables
 library(flextable)  # for formating tables
 library(knitr)
+library(viridis)  # for colour scheme
 ```
 
 # Overview
@@ -95,7 +96,15 @@ It looks like there were more breakdowns planned but not completed.
 
 ```{r}
 country_of_birth_categories <- c("Scotland", "Rest of UK", "Outside UK", "All CoB")  # obtained by copying from the excel table using datapasta::vector_paste()
-
+levels_urban_rural_6_categories <-  # levels of the variable so they appear in the right order
+  c(
+    "Large Urban Areas",
+    "Other Urban Areas",
+    "Accessible Small Towns",
+    "Remote Small Towns",
+    "Accessible Rural",
+    "Remote Rural"
+  )
 
 living_alone_table_header <- c(  # compile the column names to match what's in the spreadsheet, with a prefix that we'll use to split the columns up later
   "urban_rural_6_categories",
@@ -111,8 +120,12 @@ living_alone_by_cob_and_urban_rural <-
     col_names = living_alone_table_header
   ) %>%
   slice(odds(1:nrow(.))) %>%
-  pivot_longer(cols = -urban_rural_6_categories, names_to = c("living_alone","country_of_birth"), names_pattern = "^(alone|total)\\_(.*)$", values_to = "n")  # split the columns containing multiple variables (living alone or not & CoB)
-
+  pivot_longer(cols = -urban_rural_6_categories, names_to = c("living_alone","country_of_birth"), names_pattern = "^(alone|total)\\_(.*)$", values_to = "n") %>%  # split the columns containing multiple variables (living alone or not & CoB)
+  mutate(
+    country_of_birth = factor(country_of_birth, levels = country_of_birth_categories),
+    urban_rural_6_categories = factor(urban_rural_6_categories, levels = levels_urban_rural_6_categories)
+  )
+  
 living_alone_by_cob <-
   read_excel(
     path = exported_file,
@@ -135,9 +148,11 @@ These are logistic models:
 
 * M1 is a stratified regression (stratified on 3 urban-rural categories, meaning three separate models) of living alone on the other variables: time between census and death, marital status, age at death, country of birth, tenure (housing), and sex
 * M2 is the same model as M1 but the dependent variable is dying in an institution
-* M3 is like M1 but the 3 categories of urban-rurality are included as an independent variable
+* M3 is a regression of living alone on all variables in the entire sample (unstratified), including the 3 categories of urban-rurality as an independent variable
 
 As far as I can tell, for the purposes of the paper, M1 and M2 were used, and only the Rural (remote and accessible) stratum was considered (interpreted as the destination of migrations).
+
+M1 also contains the frequency tables for the variables broken down by the 3-way urban-rural indicator, as well as a total in a column to the right.
 
 There are univariate models in the bottom of each sheet.
 
@@ -225,6 +240,55 @@ m1_remote_multiple_regressions$sex_at_death$sex_at_death <- m1_remote_univariate
 m1_remote_multiple_regressions$housing_tenure$housing_tenure <- m1_remote_univariate_regressions$housing_tenure$housing_tenure[1:3]
 m1_remote_multiple_regressions$time_to_death$time_to_death <- m1_remote_univariate_regressions$time_to_death$time_to_death[1:7]
 m1_remote_multiple_regressions$marital_status$marital_status <- m1_remote_univariate_regressions$marital_status$marital_status[1:4]
+```
+
+
+### M1 frequency tables
+
+The frequency table is in the `M1` sheet under the Categorical Variable Codings heading, range B53:D74, L53:N74, V53:X74 for the urban-rural strata, respectively, and AF53:AH74 for the entire sample.
+
+
+```{r}
+urban_rural_strata <- c("Rural","Small towns & other urban","Large urban")  # the order they appear in the exported file
+
+m1_frequency_table_ranges <- c(
+  "B53:D74",  # rural
+  "L53:N74",  # small towns
+  "V53:X74",  # large urban
+  "AF53:AH74"  # entire sample
+)
+
+m1_frequency_tables <-
+  map2(
+    .x = m1_frequency_table_ranges,
+    .y = c(urban_rural_strata, "Entire sample"),  # strata with the entire sample added
+    .f = function(.x, .y) {
+      proportion_var_name = paste0("prop_",janitor::make_clean_names(.y))
+      num_var_name = paste0("n_",janitor::make_clean_names(.y))
+      read_excel(
+          path = exported_file,
+          sheet = "M1",
+          range = .x,
+          col_names = c("variable","levels",num_var_name),
+          col_types = c("text","text","numeric")
+      ) %>%
+      fill(variable, .direction = "down") %>%  # complete the variable names down the line
+      group_by(variable) %>%
+      mutate(  # define a new proportion variable, calculated from the sum of the num_ for all levels of a variable
+        !!rlang::sym(proportion_var_name):= scales::percent(!!rlang::sym(num_var_name) / sum(!!rlang::sym(num_var_name)), accuracy = 0.1)
+      ) %>%
+      ungroup
+    }
+  ) %>% set_names(janitor::make_clean_names(c(urban_rural_strata, "Entire sample")))  # name list items appropriately
+
+m1_merged_frequency_table <-
+  m1_frequency_tables %>%
+  reduce(.x = , .f = function(x,y) full_join(x,y, by=c("variable","levels")))
+
+## check that the entire sample total actually matches the strata totals
+stopifnot(
+  m1_merged_frequency_table$n_entire_sample == m1_merged_frequency_table$n_rural + m1_merged_frequency_table$n_large_urban + m1_merged_frequency_table$n_small_towns_other_urban
+)
 ```
 
 
@@ -326,18 +390,194 @@ for (variable in names(m2_remote_univariate_regressions)) {
 ```
 
 
+### M2 frequency table
+
+We can extract a few more pieces of descriptive summary from the M2 model, namely the breakdown of the `living alone` and `died at home or institution` variables. The strate are the same as for M1, and so the breakdown of individuals by all expalantory variables is also the same.
+
+The `living alone` variable is listed in the the Categorical Variable Codings heading, range B65:D66, L65:N66, V65:X66 for the urban-rural strata, and we'll calculate the entire sample breakdown ourselves. The `died at home/institution` variable can be extracted from the observed/predicted matrices exported by SPSS, in ranges C75:F76, M75:P76, W75:Z76.
+
+
+
+```{r}
+m2_living_alone_ranges <- c(
+  "B65:D66",  # rural
+  "L65:N66",  # small towns
+  "V65:X66"  # large urban
+)
+
+m2_living_alone <-
+  map2(
+    .x = m2_living_alone_ranges,
+    .y = urban_rural_strata,  # strata with the entire sample added
+    .f = function(.x, .y) {
+      proportion_var_name = paste0("prop_",janitor::make_clean_names(.y))
+      num_var_name = paste0("n_",janitor::make_clean_names(.y))
+      read_excel(
+          path = exported_file,
+          sheet = "M2",
+          range = .x,
+          col_names = c("variable","levels",num_var_name),
+          col_types = c("text","text","numeric")
+      ) %>%
+      fill(variable, .direction = "down") %>%  # complete the variable names down the line
+      group_by(variable) %>%
+      mutate(  # define a new proportion variable, calculated from the sum of the num_ for all levels of a variable
+        !!rlang::sym(proportion_var_name):= scales::percent(!!rlang::sym(num_var_name) / sum(!!rlang::sym(num_var_name)), accuracy = 0.1)
+      ) %>%
+      ungroup
+    }
+  ) %>% set_names(janitor::make_clean_names(urban_rural_strata))  # name list items appropriately
+
+m2_merged_living_alone <-
+  m2_living_alone %>%
+  reduce(.x = , .f = function(x,y) full_join(x,y, by=c("variable","levels"))) %>%
+  mutate(
+    n_entire_sample = rowSums(select(., dplyr::starts_with("n_"))),
+    prop_entire_sample = scales::percent(n_entire_sample / sum(n_entire_sample), accuracy = 0.1)
+    )
+
+
+m2_place_of_death_ranges <- c(
+  "C75:F76",  # rural
+  "M75:P76",  # small town + other urban
+  "W75:Z76"  # large urban
+)
+
+
+m2_place_of_death <-
+  map2(
+    .x = m2_place_of_death_ranges,
+    .y = urban_rural_strata,  # strata with the entire sample added
+    .f = function(.x, .y) {
+      proportion_var_name = paste0("prop_",janitor::make_clean_names(.y))
+      num_var_name = paste0("n_",janitor::make_clean_names(.y))
+      read_excel(
+          path = exported_file,
+          sheet = "M2",
+          range = .x,
+          col_names = c("variable","levels","remove_this",num_var_name),
+          col_types = c("text","numeric","numeric","numeric")
+      ) %>%
+      select(-remove_this) %>%  # remove unneeded column
+      fill(variable, .direction = "down") %>%  # complete the variable names down the line
+      group_by(variable) %>%
+      mutate(  # define a new proportion variable, calculated from the sum of the num_ for all levels of a variable
+        !!rlang::sym(proportion_var_name):= scales::percent(!!rlang::sym(num_var_name) / sum(!!rlang::sym(num_var_name)), accuracy = 0.1)
+      ) %>%
+      ungroup
+    }
+  ) %>% set_names(janitor::make_clean_names(urban_rural_strata))  # name list items appropriately
+
+
+m2_merged_place_of_death <-
+  m2_place_of_death %>%
+  reduce(.x = , .f = function(x,y) full_join(x,y, by=c("variable","levels"))) %>%
+  mutate(  # compute entire sample
+    n_entire_sample = rowSums(select(., dplyr::starts_with("n_"))),
+    prop_entire_sample = scales::percent(n_entire_sample / sum(n_entire_sample), accuracy = 0.1),
+    levels = if_else(levels==1, "Institution", "Home")
+    )
+```
+
+
+### M3
+
+M3 is a regression on the entire sample of individuals living alone
+
+TODO!
+
 # Notes on data
 
 * Individuals with missing marital status were excluded due to very small N;
 * Logistic models used complete data only
 
 
-# Processed tables
+# Cleaning up variable names & levels
 
 ```{r}
-tables <- list()
+#   tibble(
+#     raw = unique(c(m1_merged_frequency_table$variable, m1_regression_variables, m2_regression_variables, m2_merged_living_alone$variable, m2_merged_place_of_death$variable, unique(str_remove_all(m1_remote_multivariate_regression$variable, pattern="\\(\\d\\)"))))
+#   )
+# datapasta::tribble_paste(clean_variable_names)
+clean_variable_names <-
+  tibble::tribble(
+                                                                 ~raw, ~clean,
+                "Time between Census enumeration and death in groups", "Time between Census enumeration and death",
+                                                      "time_to_death", "Time between Census enumeration and death",
+                                                       "survival_grp", "Time between Census enumeration and death",
+                                                   "MARITAL_STATUS_d", "Marital status",
+                                                     "marital_status", "Marital status",
+                                  "age (at death) in ten year groups", "Age",
+                                                       "age_at_death", "Age",
+                                                           "age_d10y", "Age",
+"Country of Birth from death records (Scotland, rest of UK, elswhere)", "Country of birth",
+                                                   "country_of_birth", "Country of birth",
+                                                         "CoB_d_3cat", "Country of birth",
+                                                        "tenure_3cat", "Tenure type",
+                                                     "housing_tenure", "Tenure type",
+                                                        "tenure_3cat", "Tenure type",
+                                                       "sex at death", "Sex",
+                                                       "sex_at_death", "Sex",
+                                                              "SEX_d", "Sex",
+                                                       "living_alone", "Living alone",
+           "Dummy of living alone or with others/in care institution", "Living alone",
+                "Died in institution (hospital, care home, hospice)?", "Place of death",
+                                              "Urban-rural indicator", "Urban-rural indicator"
+     ) %>% distinct
+```
 
-tables$m1_remote_unadjusted_odds <-
+
+# Output directory
+
+```{r}
+if (!dir.exists("./outputs_migrations/")) dir.create("./outputs_migrations/")
+```
+
+
+
+# Processed frequency tables
+
+```{r}
+frequency_tables <- list()
+
+urban_rural_frequency <-
+  m1_merged_frequency_table %>% filter(variable=="sex at death") %>%
+  summarise_if(is.numeric, sum) %>% 
+  select(-n_entire_sample) %>%
+  pivot_longer(cols = everything(), names_to = "levels", values_to = "n_entire_sample") %>%
+  mutate(
+    variable = "Urban-rural indicator", 
+    levels = urban_rural_strata,
+    prop_entire_sample = scales::percent(n_entire_sample / sum(n_entire_sample), accuracy = 0.1)
+      )
+
+frequency_tables$descriptives <-
+  bind_rows(
+    m1_merged_frequency_table,
+    m2_merged_living_alone,
+    m2_merged_place_of_death,
+    urban_rural_frequency
+  ) %>%
+  left_join(
+    clean_variable_names, by = c("variable"="raw")
+  ) %>%
+  distinct %>%
+  mutate(
+    variable = clean_variable_names$clean[match(x = variable, table = clean_variable_names$raw)],
+    levels = str_to_sentence(levels)
+  )
+
+## save frequency table
+write_csv(frequency_tables$descriptives, path = "./outputs_migrations/migrations_descriptives_all_variable_frequencies_by_urban_rural_3_cat.csv")
+```
+
+
+# Processed regression tables
+
+```{r}
+regression_tables <- list()
+
+regression_tables$m1_remote_unadjusted_odds <-
   map2_df(
     .x = m1_remote_univariate_regressions,
     .y = names(m1_remote_univariate_regressions),
@@ -355,7 +595,7 @@ tables$m1_remote_unadjusted_odds <-
     } 
   )
 
-tables$m1_remote_adjusted_odds <-
+regression_tables$m1_remote_adjusted_odds <-
   map2_df(
     .x = m1_remote_multiple_regressions[names(m1_remote_multiple_regressions)!="constant"],  # don't incldue the Constant term
     .y = names(m1_remote_univariate_regressions[names(m1_remote_multiple_regressions)!="constant"]),  # see above comment
@@ -373,15 +613,19 @@ tables$m1_remote_adjusted_odds <-
     } 
   )
 
-tables$m1_odds <-
+regression_tables$m1_odds <-
   full_join(
-    x = tables$m1_remote_unadjusted_odds %>% rename(unadjusted_or = or),
-    y = tables$m1_remote_adjusted_odds %>% rename(adjusted_or = or),
+    x = regression_tables$m1_remote_unadjusted_odds %>% rename(unadjusted_or = or),
+    y = regression_tables$m1_remote_adjusted_odds %>% rename(adjusted_or = or),
     by = c("variable", "level")
+  ) %>%
+  mutate(
+    variable = clean_variable_names$clean[match(x = variable, table = clean_variable_names$raw)],
+    level = str_to_sentence(level)
   )
 
 
-tables$m2_remote_unadjusted_odds <-
+regression_tables$m2_remote_unadjusted_odds <-
   map2_df(
     .x = m2_remote_univariate_regressions,
     .y = names(m2_remote_univariate_regressions),
@@ -399,7 +643,7 @@ tables$m2_remote_unadjusted_odds <-
     } 
   )
 
-tables$m2_remote_adjusted_odds <-
+regression_tables$m2_remote_adjusted_odds <-
   map2_df(
     .x = m2_remote_multiple_regressions[names(m2_remote_multiple_regressions)!="constant"],  # don't incldue the Constant term
     .y = names(m2_remote_univariate_regressions[names(m2_remote_multiple_regressions)!="constant"]),  # see above comment
@@ -417,25 +661,64 @@ tables$m2_remote_adjusted_odds <-
     } 
   )
 
-tables$m2_odds <-
+regression_tables$m2_odds <-
   full_join(
-    x = tables$m2_remote_unadjusted_odds %>% rename(unadjusted_or = or),
-    y = tables$m2_remote_adjusted_odds %>% rename(adjusted_or = or),
+    x = regression_tables$m2_remote_unadjusted_odds %>% rename(unadjusted_or = or),
+    y = regression_tables$m2_remote_adjusted_odds %>% rename(adjusted_or = or),
     by = c("variable", "level")
+  ) %>%
+  mutate(
+    variable = clean_variable_names$clean[match(x = variable, table = clean_variable_names$raw)],
+    level = str_to_sentence(level)
   )
-# TODO: look at formatting tables with `gt`
+
+
+# TODO: look at formatting regression_tables with `gt`
+
+## save frequency table
+write_csv(regression_tables$m1_odds, path = "./outputs_migrations/migrations_logistic_regression_living_alone_rural_stratum.csv")
+
+## save frequency table
+write_csv(regression_tables$m2_odds, path = "./outputs_migrations/migrations_logistic_regression_death_in_institution_rural_stratum.csv")
 ```
 
 # Processed figures
 
 ```{r}
 figures <- list()
-
-# TODO: complete below!
-figures$alone_by_country_of_birth_and_urban_rural <- ggplot(
-  data = living_alone_by_cob_and_urban_rural %>% pivot_wider(names_from=living_alone, values_from=n) %>% mutate(proportion=alone/total) %>% filter(country_of_birth!="All CoB")
-) +
-  geom_col(aes(x=urban_rural_6_categories, y=proportion, group=country_of_birth, fill=country_of_birth), position = position_dodge()) +
-  NULL
 ```
 
+## Proportion living alone by CoB & Urban-rural (6-fold) indicator
+
+```{r}
+## notes: scotland is by far the most frequent category, so displaying average of all CoB is moot - it's almsot exactly the same as Scotland
+figures$alone_by_country_of_birth_and_urban_rural <-
+  ggplot(
+    data = living_alone_by_cob_and_urban_rural %>% pivot_wider(names_from=living_alone, values_from=n) %>% mutate(proportion=alone/total) %>% filter(country_of_birth!="All CoB")
+  ) +
+    geom_col(aes(x=urban_rural_6_categories, y=proportion, group=country_of_birth, fill=country_of_birth), position = position_dodge()) +
+    scale_fill_viridis(discrete = TRUE) +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) +
+    scale_y_continuous(labels = scales::label_percent(accuracy = 1L)) +
+    labs(
+      x = "Urban-rural indicator (6-fold, 2012 data)",
+      y = "Proportion individuals living alone (%)", fill = "Country of birth"
+    ) +
+    theme_minimal() +
+    # theme(axis.text.x = element_text(angle = -45, hjust = 0)) +  # looks good enough with str_wrap, no need for rotated text
+    NULL
+
+figures$alone_by_country_of_birth_and_urban_rural_grey <-  # greyscale version of above
+  figures$alone_by_country_of_birth_and_urban_rural +
+  scale_fill_grey()
+
+ggsave(figures$alone_by_country_of_birth_and_urban_rural, filename = "./outputs_migrations/proportion_living_alone_by_cob_and_urban_rural_6cat.pdf")
+ggsave(figures$alone_by_country_of_birth_and_urban_rural, filename = "./outputs_migrations/proportion_living_alone_by_cob_and_urban_rural_6cat.svg")
+ggsave(figures$alone_by_country_of_birth_and_urban_rural_grey, filename = "./outputs_migrations/proportion_living_alone_by_cob_and_urban_rural_6cat_grey.pdf")
+ggsave(figures$alone_by_country_of_birth_and_urban_rural_grey, filename = "./outputs_migrations/proportion_living_alone_by_cob_and_urban_rural_6cat_grey.svg")
+```
+
+
+## Proportion died in institution
+
+TODO: data for place of death cross-tabulation not exported from safe haven yet
