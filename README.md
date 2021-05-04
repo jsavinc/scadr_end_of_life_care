@@ -1,10 +1,11 @@
 # SCADR End of life care project
 
-End of life care analyses with SCADR at Edinburgh Napier University.
+End of life care analyses with SCADR at Edinburgh Napier University. This project has been running since 2015, and several analysts have worked on it. Extensive documentation is available in a dropbox folder, most notably a file called `01-Introduction to the Project.docx`. This repository contains some additional scripts I've written to support the analysis.
 
-The contents of this repository:
 
-* [`producing_tables_for_migrations_paper.Rmd`](./producing_tables_for_migrations_paper.Rmd) - in this script descriptives for all terms used in the logistic regression models exported from the project safe haven are compiled - the exported file is an excel spreadsheet with various SPSS output tables, including logistic regression outputs, some of which include frequency tables of the various explanatory variables. This script pulls the frequencies from the spreadsheets and compiles them into a `.csv` file. I've since been able to recompile & export the same table in the safe haven.
+# Contents
+
+* [`producing_tables_for_migrations_paper.Rmd`](./producing_tables_for_migrations_paper.Rmd) - in this script descriptives for all terms used in the logistic regression models exported from the project safe haven are compiled - the exported file is an excel spreadsheet with various SPSS output tables, including logistic regression outputs, some of which include frequency tables of the various explanatory variables. This script pulls the frequencies from the spreadsheets and compiles them into a `.csv` file. I've since been able to recompile & export the same table from the safe haven so this hacky approach isn't needed.
 
 * [`eol_care_migrations_presentation.Rmd`](./eol_care_migrations_presentation.Rmd) - Unfinished. This was an attempt at a set of slides using `xaringan`, presenting the end-of-life migrations work within this project.
 
